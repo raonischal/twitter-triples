@@ -1,5 +1,4 @@
 import tweepy
-import codecs
 
 class Tweet_extractor:
     consumer_key=""
