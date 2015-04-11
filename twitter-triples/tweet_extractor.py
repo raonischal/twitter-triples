@@ -24,8 +24,6 @@ class Tweet_extractor:
 					lang="en")
         try:
             for tweet in tweets:
-			#with open(dirpath+"/"+str(count)+".txt", 'a+') 
-			#with codecs.open(dirpath+"/"+str(count)+".txt",'a+',encoding='utf-8') as tweetfile:
 			finaltweet=tweet.text.replace("\n"," ")
 			if finaltweet!="":
 				with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
