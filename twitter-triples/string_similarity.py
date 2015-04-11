@@ -9,7 +9,8 @@ class String_Matcher:
     unique_entities=[]    
 
     def __init__(self):
-        self.entities=['carter','carters','CARTAH','CARTAR','crater','cater']       
+        self.entities=['carter','carters','CARTAH','CARTAR','crater','cater'] 
+        #self.entities=['miliman','milliman']       
        
 
     def get_unique_entities(self):
