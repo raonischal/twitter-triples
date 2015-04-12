@@ -8,7 +8,7 @@ def computeSimilarity(cluster1, cluster2):
     similarity = 0
     for string1 in cluster1:
         for string2 in cluster2:
-            similarity += smith_waterman.getSimilarity(string1, string2)
+            similarity += smith_waterman.getSimilarity(string1.lower(), string2.lower())
     return float(similarity / (len(cluster1) * len(cluster2)))
 
 def createClusters(strings):

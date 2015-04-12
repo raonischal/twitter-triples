@@ -9,10 +9,9 @@ class String_Matcher:
     entities=[]
     unique_entities=[]    
 
-    def get_unique_entities(self):
-        args=sys.argv
-        wordList1=args[2].split()
-        wordList2=args[3].split()
+    def match_strings(self, string1, string2):
+        wordList1=string1.split()
+        wordList2=string2.split()
         for entity in wordList1:
             for word in wordList2:
                 if jellyfish.soundex(entity) == jellyfish.soundex(word):return True
@@ -21,7 +20,7 @@ class String_Matcher:
 
 if __name__=="__main__":
     matcher=String_Matcher()
-    return matcher.match_strings()
+    #return matcher.match_strings()
    
 
     
