@@ -1,4 +1,4 @@
-import sys, subprocess
+import sys, subprocess, operator
 
 import hierarchical_clustering
 
@@ -23,6 +23,7 @@ class Extract_entities:
 
     def get_proper_nouns(self):
         proper_nouns = []
+        self.proper_noun_count = {}
         for tweet in self.tagged_tweets:
             is_prev = False
             previous_token = ""
@@ -31,6 +32,10 @@ class Extract_entities:
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
+                    if token in self.proper_noun_count:
+                        self.proper_noun_count[token] += 1
+                    else:
+                        self.proper_noun_count[token] = 1
                     if token not in proper_nouns:
                         proper_nouns.append(token)
                     if is_prev == True:
@@ -40,21 +45,33 @@ class Extract_entities:
                         previous_token = token
                 else:
                     if is_prev == True:
+                        if previous_token in self.proper_noun_count:
+                            self.proper_noun_count[previous_token] += 1
+                        else:
+                            self.proper_noun_count[previous_token] = 1
                         if previous_token not in proper_nouns:
                             proper_nouns.append(previous_token)
                     is_prev = False
-        return proper_nouns
+        sorted_proper_nouns = sorted(self.proper_noun_count.items(), key=operator.itemgetter(1), reverse=True)
+        return [x[0] for x in sorted_proper_nouns]
 
-    def get_named_entities(self, proper_nouns):
+    def get_named_entity_clusters(self, proper_nouns):
         clusters = hierarchical_clustering.buildClusters(proper_nouns)
+        clusters_with_count = []
         for cluster in clusters:
-            print(cluster)
-        return
+            #print(cluster)
+            count = 0
+            for string in cluster:
+                count += self.proper_noun_count[string]
+            clusters_with_count.append((cluster, count))
+        clusters_with_count = sorted(clusters_with_count, key=lambda cluster: cluster[1], reverse=True)
+        return clusters_with_count
 
 
 if __name__ == "__main__":
     entityExtractor = Extract_entities()
     entityExtractor.tag_tweets("tweets.txt")
     proper_nouns = entityExtractor.get_proper_nouns()
-    named_entities = entityExtractor.get_named_entities(proper_nouns)
+    named_entities = entityExtractor.get_named_entity_clusters(proper_nouns)
+    print(named_entities)
 
