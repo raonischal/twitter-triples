@@ -13,9 +13,9 @@ class Wiki_Mapper:
     proper_entities=[]
     noun_entities=[]
     
-    def __init__(self):
-        self.proper_entities=['#TheDazedAndConfusedTour','chicago','#UKWantsJakeMiller']
-        self.noun_entities=['penthouse','song','epic','tour','today','party','ghost','city']
+    def __init__(self,proper_nouns,common_nouns):
+        self.proper_entities=proper_nouns
+        self.noun_entities=common_nouns
 
     def map_urls(self):
         Entities={}
@@ -28,12 +28,13 @@ class Wiki_Mapper:
             
                     
 
-        return None
+        return Entities
 
     def FormatWord(self,word):
         word =  re.sub(r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', word)
         word = word[1:]
-        word=word.strip()   
+        word=word.strip() 
+        word=word.lower()  
         return word
 
     def SelectUrl(self,word,wikiUrls):
@@ -50,7 +51,7 @@ class Wiki_Mapper:
                             print(word)
                             countOfEntities+=1
                     words_present[page.url]=countOfEntities
-                    time.sleep(20) 
+                    time.sleep(5) 
         except:
             time.sleep(60*20) 
         maxcount=-1
@@ -62,7 +63,9 @@ class Wiki_Mapper:
         return bestUrl
 
 if __name__=="__main__":
-    mapper=Wiki_Mapper()
+    proper_nouns=['#TheDazedAndConfusedTour','chicago','#UKWantsJakeMiller']
+    common_nouns=['penthouse','song','epic','tour','today','party','ghost','city']
+    mapper=Wiki_Mapper(proper_nouns,common_nouns)
     entities=mapper.map_urls()
-    #for key,val in entities.items():
-    #    print(key+" : "+val)
+    for key,val in entities.items():
+        print(key+" : "+val)
