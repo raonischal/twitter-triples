@@ -2,6 +2,8 @@ import sys, subprocess, operator
 
 import hierarchical_clustering
 
+from map_url import Wiki_Mapper
+
 class Extract_entities:
     def __init__(self):
         self.ark_path = "ark-tweet-nlp-0.3.2/"
@@ -111,9 +113,13 @@ if __name__ == "__main__":
     proper_nouns = entityExtractor.get_proper_nouns()
     common_nouns = entityExtractor.get_common_nouns()
     common_entities = entityExtractor.get_named_entity_clusters(common_nouns,True)
-    named_entities = entityExtractor.get_named_entity_clusters(proper_nouns,False)
+    proper_entities = entityExtractor.get_named_entity_clusters(proper_nouns,False)
     print("Proper Nouns")    
-    print(named_entities)
+    print(proper_entities)
     print("Common Nouns")
     print(common_entities)
+        
+    # should be moved to a controller class
+    wiki_mapper=Wiki_Mapper(proper_nouns,common_nouns)
+    entity_url=wiki_mapper.map_urls()
 
