@@ -18,16 +18,19 @@ class Tweet_extractor:
         auth = tweepy.OAuthHandler(self.consumer_key , self.secret_key)
         auth.set_access_token(self.access_token_key, self.access_secret_key )
         api = tweepy.API(auth)
-        tweets=api.search(q="Anthony Davis",
-					count=100,
-					include_entities=True,
-					lang="en")
         try:
-            for tweet in tweets:
-			finaltweet=tweet.text.replace("\n"," ")
-			if finaltweet!="":
-				with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
-					tweetfile.write("\n"+finaltweet)
+            count=0
+            for tweet in tweepy.Cursor(api.search,
+                           q="Ronnie Price",
+                           count=100,
+					include_entities=True,
+					lang="en").items():
+                count+=1
+                if count>500: break
+                finaltweet=tweet.text.replace("\n"," ")
+                if finaltweet!="":
+                    with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
+                        tweetfile.write("\n"+finaltweet)
         except tweepy.TweepError:
             time.sleep(60*20)
             
