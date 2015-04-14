@@ -23,8 +23,9 @@ class Wiki_Mapper:
             print("Word is : "+word)
             if word[0]=='#' or word[0]=='@':
                 word=self.FormatWord(word)
-            wikiUrls=wikipedia.search(word)
-            Entities[word]=self.SelectUrl(word,wikiUrls)
+            wikiUrls=wikipedia.search(word, suggestion=True)
+            print(wikiUrls)
+            Entities[word]=self.SelectUrl(word,wikiUrls[0])
             
                     
 
@@ -38,22 +39,23 @@ class Wiki_Mapper:
         return word
 
     def SelectUrl(self,word,wikiUrls):
-        try:
-            words_present={}
-            for url in wikiUrls:
-                    print("Url is : "+url)
+        words_present={}
+        for url in wikiUrls:
+                try:
                     page = wikipedia.page(url)
-                    content=page.content
-                    countOfEntities=0
-                    for word in self.noun_entities:
-                        regexp = re.compile(word)
-                        if regexp.search(content) is not None: 
-                            print(word)
-                            countOfEntities+=1
-                    words_present[page.url]=countOfEntities
-                    time.sleep(5) 
-        except:
-            time.sleep(60*20) 
+                except wikipedia.exceptions.DisambiguationError:
+                    continue
+                print("Url is : "+url)    
+                content=page.content
+                countOfEntities=0
+                for word in self.noun_entities:
+                    #print(word)
+                    regexp = re.compile(re.escape(word))
+                    if regexp.search(content) is not None: 
+                        print(word)
+                        countOfEntities+=1
+                words_present[page.url]=countOfEntities
+                #time.sleep(5)  
         maxcount=-1
         bestUrl=None
         for url,count in words_present.items():
