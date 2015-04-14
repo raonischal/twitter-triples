@@ -6,20 +6,24 @@ SIMILARITY_THRESHOLD = 0.8
 
 def computeSimilarity(cluster1, cluster2):
     similarity = 0
-    for string1 in cluster1:
-        for string2 in cluster2:
+    for string1 in cluster1[0]:
+        for string2 in cluster2[0]:
             similarity += smith_waterman.getSimilarity(string1.lower(), string2.lower())
-    return float(similarity / (len(cluster1) * len(cluster2)))
+    weight = float(cluster1[1]/cluster2[1])
+    if cluster1[1] > cluster2[1]:
+        weight = float(cluster2[1]/cluster1[1])
+    return float((similarity * weight) / (len(cluster1[0]) * len(cluster2[0])))
 
 def createClusters(strings):
     clusters = []
     for string in strings:
         cluster = []
-        cluster.append(string)
-        clusters.append(cluster)
+        cluster.append(string[0])
+        clusters.append((cluster, string[1]))
     return clusters
 
 def buildClusters (strings):
+    print(strings)
     clusters = createClusters(strings)
     searchForClusters = True
     while searchForClusters == True and len(clusters) != 1:
@@ -33,8 +37,8 @@ def buildClusters (strings):
                     maxMatchIndex = j
                     maxSimilarity = similarity
             if maxSimilarity > SIMILARITY_THRESHOLD:
-                for k in range(0, len(clusters[maxMatchIndex])):
-                    clusters[i].append(clusters[maxMatchIndex][k])
+                clusters[i][0].extend(clusters[maxMatchIndex][0])
+                clusters[i] = (clusters[i][0], clusters[i][1] + clusters[maxMatchIndex][1])
                 clusters.pop(maxMatchIndex)
                 searchForClusters = True
     return clusters
