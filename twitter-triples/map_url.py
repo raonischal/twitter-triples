@@ -29,8 +29,6 @@ class Wiki_Mapper:
             wikiUrls=wikipedia.search(keyword)
             print(wikiUrls)
             #Entities[formatted_word]=self.SelectUrl(keyword,wikiUrls)
-            
-                    
 
         return Entities
 
@@ -41,10 +39,9 @@ class Wiki_Mapper:
         return word
 
     def SelectUrl(self,word,wikiUrls):
-        try:
-            words_present={}
-            for url in wikiUrls:
-                    print("Url is : "+url)
+        words_present={}
+        for url in wikiUrls:
+                try:
                     page = wikipedia.page(url)
                     content=page.content
                     countOfEntities=0
@@ -63,14 +60,31 @@ class Wiki_Mapper:
                             countOfEntities+=1
                     words_present[page.url]=countOfEntities
                     time.sleep(5) 
-        except:
-            time.sleep(60*20) 
+                except wikipedia.exceptions.DisambiguationError:
+                    continue
+                except wikipedia.exceptions.PageError:
+                    continue
+                except wikipedia.exceptions.HTTPTimeoutError:
+                    time.sleep(60*20)
+                print("Url is : "+url)    
+                content=page.content
+                countOfEntities=0
+                for word in self.noun_entities:
+                    #print(word)
+                    regexp = re.compile(re.escape(word))
+                    if regexp.search(content) is not None: 
+                        print(word)
+                        countOfEntities+=1
+                words_present[page.url]=countOfEntities
+                #time.sleep(5)  
+            
         maxcount=-1
         bestUrl=None
         for url,count in words_present.items():
             if(count>maxcount):
                 maxcount=count
                 bestUrl=url
+        print("Best URL: "  + str(bestUrl))
         return bestUrl
 
 if __name__=="__main__":

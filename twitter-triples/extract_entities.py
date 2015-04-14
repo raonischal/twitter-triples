@@ -13,7 +13,7 @@ class Extract_entities:
     def tag_tweets(self, file_name):
         output = subprocess.Popen([self.ark_path + "runTagger.sh", file_name], 
             stdout = subprocess.PIPE).communicate()
-        decoded_output = output[0].decode()
+        decoded_output = output[0].decode('utf-8')
         result = decoded_output.split("\n")
         result = result[:-1]
         self.tagged_tweets = []
@@ -36,12 +36,6 @@ class Extract_entities:
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
-                    if token in self.proper_noun_count:
-                        self.proper_noun_count[token] += 1
-                    else:
-                        self.proper_noun_count[token] = 1
-                    if token not in proper_nouns:
-                        proper_nouns.append(token)
                     if is_prev == True:
                         previous_token = previous_token + " " + token
                     else:
@@ -70,12 +64,6 @@ class Extract_entities:
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
-                    if token in self.common_noun_count:
-                        self.common_noun_count[token] += 1
-                    else:
-                        self.common_noun_count[token] = 1
-                    if token not in common_nouns:
-                        common_nouns.append(token)
                     if is_prev == True:
                         previous_token = previous_token + " " + token
                     else:
