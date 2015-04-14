@@ -41,43 +41,25 @@ class Wiki_Mapper:
     def SelectUrl(self,word,wikiUrls):
         words_present={}
         for url in wikiUrls:
-                try:
-                    page = wikipedia.page(url)
-                    content=page.content
-                    countOfEntities=0
-                    for word in self.noun_entities:
-                        if word[1]<5:continue
-                        regexp = re.compile(word)
-                        if regexp.search(content) is not None: 
-                            print(word)
-                            countOfEntities+=1
-                    words_present[page.url]=countOfEntities
-                    for word in self.proper_entities:
-                        if word[1]<5:continue
-                        regexp = re.compile(word)
-                        if regexp.search(content) is not None: 
-                            print(word)
-                            countOfEntities+=1
-                    words_present[page.url]=countOfEntities
-                    time.sleep(5) 
-                except wikipedia.exceptions.DisambiguationError:
-                    continue
-                except wikipedia.exceptions.PageError:
-                    continue
-                except wikipedia.exceptions.HTTPTimeoutError:
-                    time.sleep(60*20)
-                print("Url is : "+url)    
+            try:
+                page = wikipedia.page(url)
                 content=page.content
                 countOfEntities=0
-                for word in self.noun_entities:
-                    #print(word)
-                    regexp = re.compile(re.escape(word))
+                for word in [self.noun_entities,self.proper_entities]:
+                    if word[1]<5:continue
+                    regexp = re.compile(word)
                     if regexp.search(content) is not None: 
                         print(word)
                         countOfEntities+=1
                 words_present[page.url]=countOfEntities
-                #time.sleep(5)  
-            
+            except wikipedia.exceptions.DisambiguationError:
+                continue
+            except wikipedia.exceptions.PageError:
+                continue
+            except wikipedia.exceptions.HTTPTimeoutError:
+                time.sleep(60*20)
+                print("Url is : "+url)    
+               
         maxcount=-1
         bestUrl=None
         for url,count in words_present.items():
