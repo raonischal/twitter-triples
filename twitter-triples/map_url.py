@@ -41,9 +41,12 @@ class Wiki_Mapper:
     def SelectUrl(self,word,wikiUrls):
         words_present={}
         for url in wikiUrls:
+            try:
                 try:
                     page = wikipedia.page(url)
                 except wikipedia.exceptions.DisambiguationError:
+                    continue
+                except wikipedia.exceptions.PageError:
                     continue
                 print("Url is : "+url)    
                 content=page.content
@@ -56,12 +59,15 @@ class Wiki_Mapper:
                         countOfEntities+=1
                 words_present[page.url]=countOfEntities
                 #time.sleep(5)  
+            except wikipedia.exceptions.HTTPTimeoutError:
+                time.sleep(60*20)
         maxcount=-1
         bestUrl=None
         for url,count in words_present.items():
             if(count>maxcount):
                 maxcount=count
                 bestUrl=url
+        print("Best URL: "  + str(bestUrl))
         return bestUrl
 
 if __name__=="__main__":
