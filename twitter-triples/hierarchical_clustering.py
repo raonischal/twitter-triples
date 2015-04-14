@@ -22,7 +22,7 @@ def createClusters(strings):
     return clusters
 
 def buildClusters (strings, applyWeights = False):
-    print(strings)
+    #print(strings)
     clusters = createClusters(strings)
     searchForClusters = True
     while searchForClusters == True and len(clusters) != 1:
@@ -73,6 +73,6 @@ if __name__ == "__main__":
                 prev = False
     inputFile.close()
     clusters = buildClusters(strings)
-    for cluster in clusters:
-        print(cluster)
+    #for cluster in clusters:
+        #print(cluster)
 
