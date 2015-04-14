@@ -7,6 +7,7 @@
 import re
 import wikipedia
 import time
+from smith_waterman import getSimilarity
 
 class Wiki_Mapper:
     entityUrls={}    
@@ -20,15 +21,17 @@ class Wiki_Mapper:
     def map_urls(self):
         Entities={}
         for word in self.proper_entities:
-            if word[1]<5: continue  
-            print("Word is : "+str(word[0]))
-            keyword=" ".join(word[0])
-            if keyword[0]=='#' or keyword[0]=='@':
-                keyword=self.FormatWord(keyword)
+            if word[1]<3: continue  
+            keyword=""
+            for substring in word[0]:
+                if substring[0]=='#' or substring[0]=='@':
+                    substring=self.FormatWord(substring)
+                keyword+=substring+" "
             keyword=keyword.lower()
             wikiUrls=wikipedia.search(keyword)
+            print("Word is : "+keyword)
             print(wikiUrls)
-            #Entities[formatted_word]=self.SelectUrl(keyword,wikiUrls)
+            Entities[keyword]=self.SelectUrl(word[0],wikiUrls)
 
         return Entities
 
@@ -38,19 +41,28 @@ class Wiki_Mapper:
         word=word.strip()   
         return word
 
-    def SelectUrl(self,word,wikiUrls):
+    def SelectUrl(self,words,wikiUrls):
         words_present={}
         for url in wikiUrls:
             try:
                 page = wikipedia.page(url)
                 content=page.content
                 countOfEntities=0
-                for word in [self.noun_entities,self.proper_entities]:
-                    if word[1]<5:continue
-                    regexp = re.compile(word)
-                    if regexp.search(content) is not None: 
-                        print(word)
-                        countOfEntities+=1
+                for collection in self.noun_entities,self.proper_entities:
+                    for word in collection:
+                        if word[1]<5:continue
+                        keyword=self.select_shortest(word[0])
+                        regexp = re.compile(keyword)
+                        if regexp.search(content) is not None: 
+                            #print(word[0])                                
+                            #print(keyword)
+                            countOfEntities+=1
+                title=page.title.lower()
+                best_word=self.select_most_relevant(words).lower()
+                similarity=getSimilarity(best_word,title)
+                #print("Word, title, similarity: "+best_word+" : "+title+" : "+str(similarity))
+                # ignore this page if title not matching
+                if similarity<0.9: continue
                 words_present[page.url]=countOfEntities
             except wikipedia.exceptions.DisambiguationError:
                 continue
@@ -58,7 +70,7 @@ class Wiki_Mapper:
                 continue
             except wikipedia.exceptions.HTTPTimeoutError:
                 time.sleep(60*20)
-                print("Url is : "+url)    
+                #print("Url is : "+url)    
                
         maxcount=-1
         bestUrl=None
@@ -68,6 +80,33 @@ class Wiki_Mapper:
                 bestUrl=url
         print("Best URL: "  + str(bestUrl))
         return bestUrl
+
+    def select_shortest(self,words):
+        #toDo: change this to most relevant words?, instead of shortest words??
+        min_length=0
+        min_word=words[0]
+        for string in words:
+            if len(string)<min_length:
+                min_word=string
+                min_length=len(string)
+        return min_word
+    
+    def select_most_relevant(self,words):
+        count_similar_words={}
+        for word in words:
+            score=0
+            for string in words:
+               value=getSimilarity(word,string)
+               if value>0.9: score+=1
+            count_similar_words[word]=score
+
+        max_score=0
+        best_word=words[0]
+        for word in words:
+            if count_similar_words[word]>max_score:
+                best_word=word
+                max_score=count_similar_words[word]
+        return best_word
 
 if __name__=="__main__":
     proper_nouns=['#TheDazedAndConfusedTour','chicago','#UKWantsJakeMiller']
