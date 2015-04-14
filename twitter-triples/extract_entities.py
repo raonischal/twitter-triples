@@ -95,10 +95,10 @@ if __name__ == "__main__":
     common_nouns = entityExtractor.get_common_nouns()
     common_entities = entityExtractor.get_named_entity_clusters(common_nouns,False)
     proper_entities = entityExtractor.get_named_entity_clusters(proper_nouns,True)
-    print("Proper entities")    
-    print(proper_entities)
-    print("Common entities")
-    print(common_entities)
+    #print("Proper entities")    
+    #print(proper_entities)
+    #print("Common entities")
+    #print(common_entities)
         
     #ToDo: should be moved to a controller class
     wiki_mapper=Wiki_Mapper(proper_entities,common_entities)
