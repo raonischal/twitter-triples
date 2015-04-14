@@ -20,11 +20,15 @@ class Wiki_Mapper:
     def map_urls(self):
         Entities={}
         for word in self.proper_entities:
-            print("Word is : "+word)
-            if word[0]=='#' or word[0]=='@':
-                word=self.FormatWord(word)
-            wikiUrls=wikipedia.search(word)
-            Entities[word]=self.SelectUrl(word,wikiUrls)
+            if word[1]<5: continue  
+            print("Word is : "+str(word[0]))
+            keyword=" ".join(word[0])
+            if keyword[0]=='#' or keyword[0]=='@':
+                keyword=self.FormatWord(keyword)
+            keyword=keyword.lower()
+            wikiUrls=wikipedia.search(keyword)
+            print(wikiUrls)
+            #Entities[formatted_word]=self.SelectUrl(keyword,wikiUrls)
             
                     
 
@@ -33,8 +37,7 @@ class Wiki_Mapper:
     def FormatWord(self,word):
         word =  re.sub(r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r' \1', word)
         word = word[1:]
-        word=word.strip() 
-        word=word.lower()  
+        word=word.strip()   
         return word
 
     def SelectUrl(self,word,wikiUrls):
@@ -46,6 +49,14 @@ class Wiki_Mapper:
                     content=page.content
                     countOfEntities=0
                     for word in self.noun_entities:
+                        if word[1]<5:continue
+                        regexp = re.compile(word)
+                        if regexp.search(content) is not None: 
+                            print(word)
+                            countOfEntities+=1
+                    words_present[page.url]=countOfEntities
+                    for word in self.proper_entities:
+                        if word[1]<5:continue
                         regexp = re.compile(word)
                         if regexp.search(content) is not None: 
                             print(word)
