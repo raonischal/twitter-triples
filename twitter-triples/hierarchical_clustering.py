@@ -3,16 +3,15 @@ import sys
 import smith_waterman
 
 SIMILARITY_THRESHOLD = 0.8
+SIMILARITY_THRESHOLD_WITH_WEIGHTS = 0.5
 
 def computeSimilarity(cluster1, cluster2):
     similarity = 0
     for string1 in cluster1[0]:
         for string2 in cluster2[0]:
             similarity += smith_waterman.getSimilarity(string1.lower(), string2.lower())
-    weight = float(cluster1[1]/cluster2[1])
-    if cluster1[1] > cluster2[1]:
-        weight = float(cluster2[1]/cluster1[1])
-    return float((similarity * weight) / (len(cluster1[0]) * len(cluster2[0])))
+    overallSimilarity = float((similarity) / (len(cluster1[0]) * len(cluster2[0])))
+    return overallSimilarity
 
 def createClusters(strings):
     clusters = []
@@ -22,7 +21,7 @@ def createClusters(strings):
         clusters.append((cluster, string[1]))
     return clusters
 
-def buildClusters (strings):
+def buildClusters (strings, applyWeights = False):
     print(strings)
     clusters = createClusters(strings)
     searchForClusters = True
@@ -37,10 +36,14 @@ def buildClusters (strings):
                     maxMatchIndex = j
                     maxSimilarity = similarity
             if maxSimilarity > SIMILARITY_THRESHOLD:
-                clusters[i][0].extend(clusters[maxMatchIndex][0])
-                clusters[i] = (clusters[i][0], clusters[i][1] + clusters[maxMatchIndex][1])
-                clusters.pop(maxMatchIndex)
-                searchForClusters = True
+                weight = float(clusters[i][1]/clusters[maxMatchIndex][1])
+                if clusters[i][1] > clusters[maxMatchIndex][1]:
+                    weight = float(clusters[maxMatchIndex][1]/clusters[i][1])
+                if applyWeights == False or float(maxSimilarity * weight) > SIMILARITY_THRESHOLD_WITH_WEIGHTS:
+                    clusters[i][0].extend(clusters[maxMatchIndex][0])
+                    clusters[i] = (clusters[i][0], clusters[i][1] + clusters[maxMatchIndex][1])
+                    clusters.pop(maxMatchIndex)
+                    searchForClusters = True
     return clusters
 
 if __name__ == "__main__":
