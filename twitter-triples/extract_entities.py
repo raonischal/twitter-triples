@@ -7,6 +7,7 @@ from map_url import Wiki_Mapper
 class Extract_entities:
     def __init__(self):
         self.ark_path = "ark-tweet-nlp-0.3.2/"
+        self.word_count={} 
         return
 
     def tag_tweets(self, file_name):
@@ -56,7 +57,7 @@ class Extract_entities:
                             proper_nouns.append(previous_token)
                     is_prev = False
         sorted_proper_nouns = sorted(self.proper_noun_count.items(), key=operator.itemgetter(1), reverse=True)
-        return [x[0] for x in sorted_proper_nouns]
+        return sorted_proper_nouns
 
     def get_common_nouns(self):
         common_nouns = []
@@ -90,7 +91,7 @@ class Extract_entities:
                             common_nouns.append(previous_token)
                     is_prev = False
         sorted_common_nouns = sorted(self.common_noun_count.items(), key=operator.itemgetter(1), reverse=True)
-        return [x[0] for x in sorted_common_nouns]
+        return sorted_common_nouns
 
 
     def get_named_entity_clusters(self, nouns, IsCommonNoun):
@@ -112,14 +113,14 @@ if __name__ == "__main__":
     entityExtractor.tag_tweets("tweets.txt")
     proper_nouns = entityExtractor.get_proper_nouns()
     common_nouns = entityExtractor.get_common_nouns()
-    common_entities = entityExtractor.get_named_entity_clusters(common_nouns,True)
-    proper_entities = entityExtractor.get_named_entity_clusters(proper_nouns,False)
-    print("Proper Nouns")    
+    common_entities = entityExtractor.get_named_entity_clusters([x[0] for x in common_nouns],True)
+    proper_entities = entityExtractor.get_named_entity_clusters([x[0] for x in proper_nouns],False)
+    print("Proper entities")    
     print(proper_entities)
-    print("Common Nouns")
+    print("Common entities")
     print(common_entities)
         
-    # should be moved to a controller class
-    wiki_mapper=Wiki_Mapper(proper_nouns,common_nouns)
+    #ToDo: should be moved to a controller class
+    wiki_mapper=Wiki_Mapper(proper_entities,common_entities)
     entity_url=wiki_mapper.map_urls()
 
