@@ -7,7 +7,7 @@
 import re
 import wikipedia
 import time
-from smith_waterman import String_Comparer
+from smith_waterman import Smith_Waterman
 import operator
 
 class Wiki_Mapper:
@@ -18,12 +18,12 @@ class Wiki_Mapper:
     def __init__(self,proper_nouns,common_nouns):
         self.proper_entities=proper_nouns
         self.noun_entities=common_nouns
-        self.comparer=String_Comparer(0.5,1)
+        self.comparer=Smith_Waterman(0.5)
 
     def map_urls(self):
         Entities={}
         for word in self.proper_entities:
-            if word[1]<3: continue  
+            if word[1]<5: continue  
             formatted_words=[]
             for substring in word[0]:
                 if substring[0]=='#' or substring[0]=='@':
