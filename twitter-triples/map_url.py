@@ -8,6 +8,7 @@ import re
 import wikipedia
 import time
 from smith_waterman import getSimilarity
+import operator
 
 class Wiki_Mapper:
     entityUrls={}    
@@ -22,16 +23,17 @@ class Wiki_Mapper:
         Entities={}
         for word in self.proper_entities:
             if word[1]<3: continue  
-            keyword=""
+            formatted_words=[]
             for substring in word[0]:
                 if substring[0]=='#' or substring[0]=='@':
                     substring=self.FormatWord(substring)
-                keyword+=substring+" "
-            keyword=keyword.lower()
-            wikiUrls=wikipedia.search(keyword)
-            print("Word is : "+keyword)
-            print(wikiUrls)
-            Entities[keyword]=self.SelectUrl(word[0],wikiUrls)
+                substring=substring.lower()
+                formatted_words.append(substring)
+            keyword=self.select_most_relevant(formatted_words)
+            #wikiUrls=wikipedia.search(keyword)
+            #print("Word is : "+keyword)
+            #print(wikiUrls)
+            #Entities[keyword]=self.SelectUrl(word[0],wikiUrls)
 
         return Entities
 
@@ -92,21 +94,16 @@ class Wiki_Mapper:
         return min_word
     
     def select_most_relevant(self,words):
+        print(words)        
         count_similar_words={}
         for word in words:
             score=0
             for string in words:
                value=getSimilarity(word,string)
-               if value>0.9: score+=1
+               if value>0.95: score+=1
             count_similar_words[word]=score
-
-        max_score=0
-        best_word=words[0]
-        for word in words:
-            if count_similar_words[word]>max_score:
-                best_word=word
-                max_score=count_similar_words[word]
-        return best_word
+        sorted_words = sorted(count_similar_words.items(), key=operator.itemgetter(1),reverse=True)
+        print(sorted_words)
 
 if __name__=="__main__":
     proper_nouns=['#TheDazedAndConfusedTour','chicago','#UKWantsJakeMiller']
