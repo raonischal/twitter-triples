@@ -21,6 +21,7 @@ def createClusters(strings):
     return clusters
 
 def buildClusters (strings):
+    print(strings)
     clusters = createClusters(strings)
     searchForClusters = True
     while searchForClusters == True and len(clusters) != 1:
@@ -34,6 +35,10 @@ def buildClusters (strings):
                     maxMatchIndex = j
                     maxSimilarity = similarity
             if maxSimilarity > SIMILARITY_THRESHOLD:
+                print(str(clusters[maxMatchIndex]))
+                print(str(clusters[i]))
+                print(maxSimilarity)
+                ip=input("Press enter to continue:")
                 for k in range(0, len(clusters[maxMatchIndex])):
                     clusters[i].append(clusters[maxMatchIndex][k])
                 clusters.pop(maxMatchIndex)
