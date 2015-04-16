@@ -7,17 +7,18 @@
 import re
 import wikipedia
 import time
-from smith_waterman import getSimilarity
+from smith_waterman import String_Comparer
 import operator
 
 class Wiki_Mapper:
     entityUrls={}    
     proper_entities=[]
-    noun_entities=[]
+    noun_entities=[]    
     
     def __init__(self,proper_nouns,common_nouns):
         self.proper_entities=proper_nouns
         self.noun_entities=common_nouns
+        self.comparer=String_Comparer(0.5,1)
 
     def map_urls(self):
         Entities={}
@@ -88,7 +89,6 @@ class Wiki_Mapper:
         min_length=0
         min_word=words[0]
         for string in words:
-            if len(string)<min_length:
                 min_word=string
                 min_length=len(string)
         return min_word
@@ -99,7 +99,7 @@ class Wiki_Mapper:
         for word in words:
             score=0
             for string in words:
-               value=getSimilarity(word,string)
+               value=self.comparer.getSimilarity(word,string)
                if value>0.95: score+=1
             count_similar_words[word]=score
         sorted_words = sorted(count_similar_words.items(), key=operator.itemgetter(1),reverse=True)
