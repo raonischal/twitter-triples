@@ -1,14 +1,15 @@
 import sys
 
-import smith_waterman
+from smith_waterman import Smith_Waterman
 
 SIMILARITY_THRESHOLD = 0.8
 
 def computeSimilarity(cluster1, cluster2):
     similarity = 0
+    matcher = Smith_Waterman(0.5)
     for string1 in cluster1:
         for string2 in cluster2:
-            similarity += smith_waterman.getSimilarity(string1.lower(), string2.lower())
+            similarity += matcher.getSimilarity(string1.lower(), string2.lower())
     return float(similarity / (len(cluster1) * len(cluster2)))
 
 def createClusters(strings):
