@@ -82,9 +82,17 @@ class Extract_entities:
         return sorted_common_nouns
 
 
-    def get_named_entity_clusters(self, nouns, applyWeights):
-        clusters = hierarchical_clustering.buildClusters(nouns, applyWeights = applyWeights)
-        clusters_with_count = sorted(clusters, key=lambda cluster: cluster[1], reverse=True)
+    def get_named_entity_clusters(self, nouns, IsCommonNoun):
+        clusters = hierarchical_clustering.buildClusters(nouns)
+        clusters_with_count = []
+        for cluster in clusters:
+            #print(cluster)
+            count = 0
+            for string in cluster:
+                if IsCommonNoun is True:    count += self.common_noun_count[string]
+                else:   count += self.proper_noun_count[string]
+            clusters_with_count.append((cluster, count))
+        clusters_with_count = sorted(clusters_with_count, key=lambda cluster: cluster[1], reverse=True)
         return clusters_with_count
 
 
@@ -93,8 +101,8 @@ if __name__ == "__main__":
     entityExtractor.tag_tweets("tweets.txt")
     proper_nouns = entityExtractor.get_proper_nouns()
     common_nouns = entityExtractor.get_common_nouns()
-    common_entities = entityExtractor.get_named_entity_clusters(common_nouns,False)
-    proper_entities = entityExtractor.get_named_entity_clusters(proper_nouns,True)
+    common_entities = entityExtractor.get_named_entity_clusters([x[0] for x in common_nouns],True)
+    proper_entities = entityExtractor.get_named_entity_clusters([x[0] for x in proper_nouns],False)
     #print("Proper entities")    
     #print(proper_entities)
     #print("Common entities")

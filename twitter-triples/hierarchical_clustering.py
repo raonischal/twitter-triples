@@ -3,26 +3,23 @@ import sys
 import smith_waterman
 
 SIMILARITY_THRESHOLD = 0.8
-SIMILARITY_THRESHOLD_WITH_WEIGHTS = 0.5
 
 def computeSimilarity(cluster1, cluster2):
     similarity = 0
-    for string1 in cluster1[0]:
-        for string2 in cluster2[0]:
+    for string1 in cluster1:
+        for string2 in cluster2:
             similarity += smith_waterman.getSimilarity(string1.lower(), string2.lower())
-    overallSimilarity = float((similarity) / (len(cluster1[0]) * len(cluster2[0])))
-    return overallSimilarity
+    return float(similarity / (len(cluster1) * len(cluster2)))
 
 def createClusters(strings):
     clusters = []
     for string in strings:
         cluster = []
-        cluster.append(string[0])
-        clusters.append((cluster, string[1]))
+        cluster.append(string)
+        clusters.append(cluster)
     return clusters
 
-def buildClusters (strings, applyWeights = False):
-    #print(strings)
+def buildClusters (strings):
     clusters = createClusters(strings)
     searchForClusters = True
     while searchForClusters == True and len(clusters) != 1:
@@ -36,14 +33,10 @@ def buildClusters (strings, applyWeights = False):
                     maxMatchIndex = j
                     maxSimilarity = similarity
             if maxSimilarity > SIMILARITY_THRESHOLD:
-                weight = float(clusters[i][1]/clusters[maxMatchIndex][1])
-                if clusters[i][1] > clusters[maxMatchIndex][1]:
-                    weight = float(clusters[maxMatchIndex][1]/clusters[i][1])
-                if applyWeights == False or float(maxSimilarity * weight) > SIMILARITY_THRESHOLD_WITH_WEIGHTS:
-                    clusters[i][0].extend(clusters[maxMatchIndex][0])
-                    clusters[i] = (clusters[i][0], clusters[i][1] + clusters[maxMatchIndex][1])
-                    clusters.pop(maxMatchIndex)
-                    searchForClusters = True
+                for k in range(0, len(clusters[maxMatchIndex])):
+                    clusters[i].append(clusters[maxMatchIndex][k])
+                clusters.pop(maxMatchIndex)
+                searchForClusters = True
     return clusters
 
 if __name__ == "__main__":
@@ -73,6 +66,6 @@ if __name__ == "__main__":
                 prev = False
     inputFile.close()
     clusters = buildClusters(strings)
-    #for cluster in clusters:
-        #print(cluster)
+    for cluster in clusters:
+        print(cluster)
 
