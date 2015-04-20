@@ -21,7 +21,7 @@ class Tweet_extractor:
         try:
             count=0
             for tweet in tweepy.Cursor(api.search,
-                           q="Ronnie Price",
+                           q="Masarat Alam",
                            count=100,
 					include_entities=True,
 					lang="en",
@@ -32,7 +32,7 @@ class Tweet_extractor:
                 finaltweet=tweet.text.replace("\n"," ")
                 if finaltweet!="":
                     with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
-                        tweetfile.write("\n"+finaltweet)
+                        tweetfile.write(finaltweet+"\n")
         except tweepy.TweepError:
             time.sleep(60*20)
             
