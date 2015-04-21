@@ -8,10 +8,10 @@ class Tweet_extractor:
     access_secret_key =""        
 
     def __init__(self):
-        self.consumer_key=input("Enter OAUTH consumer key: ")
-        self.secret_key=input("Enter OAUTH consumer secret key: ")
-        self.access_token_key=input("Enter OAUTH consumer Access Token key: ")
-        self.access_secret_key=input("Enter OAUTH consumer Access Token Secret key: ")
+        self.consumer_key=raw_input("Enter OAUTH consumer key: ")
+        self.secret_key=raw_input("Enter OAUTH consumer secret key: ")
+        self.access_token_key=raw_input("Enter OAUTH consumer Access Token key: ")
+        self.access_secret_key=raw_input("Enter OAUTH consumer Access Token Secret key: ")
     
 
     def get_tweets(self):

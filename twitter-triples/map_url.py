@@ -24,21 +24,36 @@ class Wiki_Mapper:
         Entities={}
         for word in self.proper_entities:
             if word[1]<10: continue  
-            formatted_words=[]
+            formatted_words=set()
             for substring in word[0]:
                 substring=self.FormatWord(substring)
                 if substring is None: continue
                 substring=substring.lower()
-                formatted_words.append(substring)
-            print(formatted_words)
+                formatted_words.add(substring)
+            formatted_words = list(formatted_words)
+            #print(formatted_words)
             #keywords=self.select_most_relevant(formatted_words)
             wikiUrls=[]
             for word in formatted_words:
                 wikiUrls.extend(wikipedia.search(word))
-            wikiUrls=set(wikiUrls)
+            wikiUrls=self.prune_search_space(formatted_words, wikiUrls)
+            #print(" ")
+            print(wikiUrls)
             Entities[formatted_words[0]]=self.SelectUrl(formatted_words[0],wikiUrls)
 
         return Entities
+
+    def prune_search_space(self, formatted_words, wikiUrls):
+        target_urls = set()
+        for url in wikiUrls:
+            similarity = 0
+            for word in formatted_words:
+                similarity += self.comparer.getSimilarity(word, url.encode("utf-8").lower())
+            similarity = similarity / (len(formatted_words))
+            #print(url + " => "+ str(similarity))
+            if similarity >= 0.8:
+                target_urls.add(url)
+        return target_urls
 
     def FormatWord(self,word):
         try:
@@ -67,9 +82,9 @@ class Wiki_Mapper:
                 page = wikipedia.page(url)
                 content=page.content
                 title=page.title.lower()
-                similarity=self.comparer.getSimilarity(searchTerm,title.encode("utf-8"))
+                #similarity=self.comparer.getSimilarity(searchTerm,title.encode("utf-8"))
                 #print("Word, title, similarity: "+searchTerm+" : "+title.encode("utf-8")+" : "+str(similarity))
-                if similarity<0.9: continue
+                #if similarity<0.9: continue
                 countOfEntities=0
                 for collection in self.noun_entities,self.proper_entities:
                     for word in collection:
@@ -90,7 +105,7 @@ class Wiki_Mapper:
             except wikipedia.exceptions.PageError:
                 continue
             except wikipedia.exceptions.HTTPTimeoutError:
-                time.sleep(60*20)    
+                time.sleep(60*20)
                
         maxcount=-1
         bestUrl=None
