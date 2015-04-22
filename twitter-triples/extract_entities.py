@@ -30,9 +30,14 @@ class Extract_entities:
         self.proper_noun_count = {}
         for tweet in self.tagged_tweets:
             is_prev = False
+            is_possessive = False
             previous_token = ""
             for token in tweet:
                 if token.endswith(("/^", "/Z")):
+                    if token.endswith("/Z"):
+                        is_possessive = True
+                    else:
+                        is_possessive = False
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
@@ -41,6 +46,14 @@ class Extract_entities:
                     else:
                         is_prev = True
                         previous_token = token
+                    if is_possessive == True:
+                        if previous_token not in self.proper_noun_count:
+                            self.proper_noun_count[previous_token] = 0
+                        self.proper_noun_count[previous_token] += 1
+                        if previous_token not in proper_nouns:
+                            proper_nouns.append(previous_token)
+                        is_prev = False
+                        previous_token = ""
                 else:
                     if is_prev == True:
                         if previous_token in self.proper_noun_count:
@@ -58,9 +71,14 @@ class Extract_entities:
         self.common_noun_count = {}
         for tweet in self.tagged_tweets:
             is_prev = False
+            is_possessive = False
             previous_token = ""
             for token in tweet:
                 if token.endswith(("/N", "/S")):
+                    if token.endswith("/S"):
+                        is_possessive = True
+                    else:
+                        is_possessive = False
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
@@ -69,12 +87,19 @@ class Extract_entities:
                     else:
                         is_prev = True
                         previous_token = token
+                    if is_possessive == True:
+                        if previous_token not in self.common_noun_count:
+                            self.common_noun_count[previous_token] = 0
+                        self.common_noun_count[previous_token] += 1
+                        if previous_token not in common_nouns:
+                            common_nouns.append(previous_token)
+                        is_prev = False
+                        previous_token = ""
                 else:
                     if is_prev == True:
-                        if previous_token in self.common_noun_count:
-                            self.common_noun_count[previous_token] += 1
-                        else:
-                            self.common_noun_count[previous_token] = 1
+                        if previous_token not in self.common_noun_count:
+                            self.common_noun_count[previous_token] = 0
+                        self.common_noun_count[previous_token] += 1
                         if previous_token not in common_nouns:
                             common_nouns.append(previous_token)
                     is_prev = False

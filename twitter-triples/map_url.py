@@ -21,7 +21,8 @@ class Wiki_Mapper:
         self.comparer=Smith_Waterman(0.5)
 
     def map_urls(self):
-        Entities={}
+        #Entities = {}
+        Entities=[]
         for word in self.proper_entities:
             if word[1]<10: continue  
             formatted_words=set()
@@ -39,8 +40,8 @@ class Wiki_Mapper:
             wikiUrls=self.prune_search_space(formatted_words, wikiUrls)
             #print(" ")
             print(wikiUrls)
-            Entities[formatted_words[0]]=self.SelectUrl(formatted_words[0],wikiUrls)
-
+            #Entities[formatted_words[0]]=self.SelectUrl(formatted_words[0],wikiUrls)
+            Entities.append((formatted_words, self.SelectUrl(formatted_words[0],wikiUrls)))
         return Entities
 
     def prune_search_space(self, formatted_words, wikiUrls):
