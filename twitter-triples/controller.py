@@ -26,14 +26,6 @@ if __name__ == "__main__":
     wiki_mapper=Wiki_Mapper(proper_noun_entities,common_noun_entities)
     entity_url=wiki_mapper.map_urls()
 
-    sparql_endpoint_interface = SPARQL_Endpoint_Interface()
-
-    entities = {}
-    for entity in entity_url:
-        for keyword in entity[0]:
-            if keyword not in entities and entity[1]!= None:
-                entities[keyword] = sparql_endpoint_interface.getDBPediaURI(entity[1])
-    
     # 4.replace key word with url?
 
     # 5. get relationships between entities
