@@ -90,8 +90,8 @@ class Wiki_Mapper:
                 for collection in self.noun_entities,self.proper_entities:
                     for word in collection:
                         if word[1]<5:continue
-                        keyword=self.select_shortest(word[0])
-                        regexp = re.compile(keyword)
+                        #keyword=self.select_shortest(word[0])
+                        regexp = re.compile(word[0][0])
                         if regexp.search(content) is not None: 
                             #print(word[0])                                
                             #print(keyword)
