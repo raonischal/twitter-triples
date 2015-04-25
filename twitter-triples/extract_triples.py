@@ -74,7 +74,7 @@ class Relation_Extractor:
                             if entity.startswith("BN:") == True:
                                 entity = entity[3:]
                             self.add_to_triple_store((prevEntity, verbEntity, entity))
-                            self.triples.append(prevEntity + " " + verbEntity + " " + entity + " . ")
+                            self.triples.append(prevEntity + " " + verbEntity + " " + entity)
                 elif node.label() == "VP":
                     if entity == None:
                         time.sleep(0.001) # TODO handle when entity is not present
@@ -107,7 +107,7 @@ class Relation_Extractor:
                     if len(adjectives) > 0 and entityUri != None:
                         for adjective in adjectives:
                             self.add_to_triple_store((entityUri, self.uriForIs, adjective))
-                            self.triples.append(entityUri + " " +self.uriForIs +" " + adjective.lower() + " . ")
+                            self.triples.append(entityUri + " " +self.uriForIs +" " + adjective.lower())
                         adjectives = []
             else:
                 if node[1] == "Z":
@@ -116,7 +116,7 @@ class Relation_Extractor:
                     if len(adjectives) > 0 and entityUri != None:
                         for adjective in adjectives:
                             self.add_to_triple_store((entityUri, self.uriForIs, adjective))
-                            self.triples.append(entityUri + " " +self.uriForIs + " " + adjective.lower() + " . ")
+                            self.triples.append(entityUri + " " +self.uriForIs + " " + adjective.lower())
                         adjectives = []
                 elif node[1] == "A":
                     adjectives.append(node[0])
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         for item in listData:
             entities[item] = entity
 
-    tweets = tag_tweets("tweets5.txt")
+    tweets = tag_tweets("tweets.txt")
     triple_store = rdflib.Graph()
     relation_extractor = Relation_Extractor(tweets, entities, triple_store)
     relation_extractor.extract_relationships()

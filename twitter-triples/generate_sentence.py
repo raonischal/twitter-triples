@@ -23,7 +23,7 @@ class Sentence_generator:
         sentences=[]
         for triple_touple in self.tuples:
             triple=triple_touple[0]
-            words=triple.split()  
+            words=triple.split(" ", 2)  
             subject_name=filter_noun(words[0]).title()
             object_name=filter_noun(words[2])    
             #verb_past=en.verb.present(filter_verb(words[1]))
