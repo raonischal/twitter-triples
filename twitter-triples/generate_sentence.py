@@ -1,5 +1,3 @@
-import en
-
 def filter_verb(word):
     word=word.replace('>','')
     word=word.replace('<','')

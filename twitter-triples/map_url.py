@@ -32,7 +32,7 @@ class Wiki_Mapper:
                 substring=substring.lower()
                 formatted_words.add(substring)
             formatted_words = list(formatted_words)
-            #print(formatted_words)
+            print(formatted_words)
             #keywords=self.select_most_relevant(formatted_words)
             wikiUrls=[]
             for word in formatted_words:
