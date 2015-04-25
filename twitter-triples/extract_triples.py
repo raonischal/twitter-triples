@@ -39,7 +39,7 @@ class Relation_Extractor:
     def extract_relationships(self):
         processed_tweets = self.preprocess_tweets()
         grammar = r"""
-            ENTITY: {<\^>+}
+            ENTITY: {<\^|@>+}
             NP: {<D|Z>?<A>*<N|ENTITY>+}
             VP: {<V>+}
             REL: {<NP><VP><P>*<NP>}
@@ -95,7 +95,7 @@ class Relation_Extractor:
         adjectives = []
         entityUri = None
         is_noun = False
-        noun = None
+        noun = ""
         for node in parent:
             if type(node) is nltk.Tree:
                 if node.label() == "ENTITY":
@@ -121,15 +121,15 @@ class Relation_Extractor:
                 elif node[1] == "A":
                     adjectives.append(node[0])
                 elif node[1] == "N" : 
-                    noun = node[0]
+                    noun += " " + node[0]
                     is_noun = True
         if is_noun == True:
-            label = ""
-            for leaf in parent.leaves():
-                label += leaf[0] + " "
-            label = label.strip().lower()
+            #label = ""
+            #for leaf in parent.leaves():
+            #    label += leaf[0] + " "
+            #label = label.strip().lower()
             if entityUri == None:
-                return "BN:" + label
+                return "BN:" + noun.strip().lower()
             else:
                 return None
         else:

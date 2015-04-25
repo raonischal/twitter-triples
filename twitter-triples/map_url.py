@@ -32,14 +32,14 @@ class Wiki_Mapper:
                 substring=substring.lower()
                 formatted_words.add(substring)
             formatted_words = list(formatted_words)
-            print(formatted_words)
+            #print(formatted_words)
             #keywords=self.select_most_relevant(formatted_words)
             wikiUrls=[]
             for word in formatted_words:
                 wikiUrls.extend(wikipedia.search(word))
             wikiUrls=self.prune_search_space(formatted_words, wikiUrls)
             #print(" ")
-            print(wikiUrls)
+            #print(wikiUrls)
             #Entities[formatted_words[0]]=self.SelectUrl(formatted_words[0],wikiUrls)
             Entities.append((formatted_words, self.SelectUrl(formatted_words[0],wikiUrls)))
         return Entities
@@ -114,7 +114,7 @@ class Wiki_Mapper:
             if(count>maxcount):
                 maxcount=count
                 bestUrl=url
-        print("Best URL: "  + str(bestUrl))
+        #print("Best URL: "  + str(bestUrl))
         return bestUrl
 
     def select_shortest(self,words):

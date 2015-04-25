@@ -1,5 +1,7 @@
 import tweepy
 import codecs
+import os
+import time
 
 class Tweet_extractor:
     consumer_key=""
@@ -19,6 +21,10 @@ class Tweet_extractor:
         self.access_secret_key = keyFile.readline().strip()
 
     def get_tweets(self, query):
+        try:
+            os.remove("tweets.txt")
+        except:
+            time.sleep(0.001)
         auth = tweepy.OAuthHandler(self.consumer_key , self.secret_key)
         auth.set_access_token(self.access_token_key, self.access_secret_key )
         api = tweepy.API(auth)

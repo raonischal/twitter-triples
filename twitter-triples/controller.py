@@ -18,21 +18,27 @@ if __name__ == "__main__":
         print("Error: Please provide the filename to twitter's API keys")
     query = raw_input("Please enter the query: ")
     extractor=Tweet_extractor(sys.argv[1])
+    print("\nFetching tweets for \"" + query + "\"")
     tweets=extractor.get_tweets(query)
     extractor.write_to_file()
 
     # 2. Extract entities
     entityExtractor = Extract_entities()
+    print("\nTagging the tweets with parts-of-speech")
     entityExtractor.tag_tweets("tweets.txt")
+    print("\nExtracting entity names")
     proper_nouns = entityExtractor.get_proper_nouns()
     common_nouns = entityExtractor.get_common_nouns()
+    print("\nBuilding clusters of similar entities")
     proper_noun_entities = entityExtractor.get_named_entity_clusters([x[0] for x in proper_nouns],False)
     common_noun_entities = entityExtractor.get_named_entity_clusters([x[0] for x in common_nouns],True)
 
     # 3. Map urls
+    print("\nSearching wikipedia to match the extracted entities")
     wiki_mapper=Wiki_Mapper(proper_noun_entities,common_noun_entities)
     entity_url=wiki_mapper.map_urls()
 
+    print("\nFetching DBPedia URIs of entities")
     sparql_endpoint = SPARQL_Endpoint_Interface()
     entities = {}
     for entity in entity_url:
@@ -43,11 +49,12 @@ if __name__ == "__main__":
     # 4.replace key word with url?
 
     # 5. get relationships between entities
+    print("\nExtracting relationships between the entities")
     triple_store = rdflib.Graph()
     relationship_extractor = Relation_Extractor(entityExtractor.tagged_tweets, entities, triple_store)
     relationship_extractor.extract_relationships()
 
-    #print(relationship_extractor.triples)
+    print("\nGenerating RDF triples")
     triplesCountMap = {}
     for triple in relationship_extractor.triples:
         if triple not in triplesCountMap:
@@ -71,8 +78,14 @@ if __name__ == "__main__":
     sortedTriples = sorted(triplesCountMap.items(), key=operator.itemgetter(1), reverse=True)
 
     # 6. generate summary
+    print("\n\nSummary of the twitter trend: ")
     sentence_generator=Sentence_generator(sortedTriples)
     summary=sentence_generator.get_sentences()
-
-    triple_store.serialize(destination='triples.ttl', format='turtle')
+    
+    if query.startswith("#"):
+        fileName = query[1:]
+    else:
+        fileName = query
+    triple_store.serialize(destination=fileName+'.ttl', format='turtle')
+    print("\nSaved the triples to \"" + fileName + ".ttl\"")
 

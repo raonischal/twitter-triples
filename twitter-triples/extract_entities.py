@@ -12,7 +12,7 @@ class Extract_entities:
 
     def tag_tweets(self, file_name):
         output = subprocess.Popen([self.ark_path + "runTagger.sh", file_name], 
-            stdout = subprocess.PIPE).communicate()
+            stdout = subprocess.PIPE, stderr = subprocess.PIPE).communicate()
         decoded_output = output[0].decode('utf-8')
         result = decoded_output.split("\n")
         result = result[:-1]
@@ -33,7 +33,7 @@ class Extract_entities:
             is_possessive = False
             previous_token = ""
             for token in tweet:
-                if token.endswith(("/^", "/Z")):
+                if token.endswith(("/^", "/Z", "/@")):
                     if token.endswith("/Z"):
                         is_possessive = True
                     else:
