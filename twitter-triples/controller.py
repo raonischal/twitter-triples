@@ -29,8 +29,17 @@ if __name__ == "__main__":
     print("\nExtracting entity names")
     proper_nouns = entityExtractor.get_proper_nouns()
     common_nouns = entityExtractor.get_common_nouns()
-    print("\nBuilding clusters of similar entities")
+    print("\nBuilding clusters of similar names")
     proper_noun_entities = entityExtractor.get_named_entity_clusters([x[0] for x in proper_nouns],False)
+
+    print("\nTop clusters: ")
+    for i in range(0, 10):
+        names = ""
+        for name in proper_noun_entities[i][0]:
+            word = "\"" + name + "\""
+            names = names + ", " + word
+        print("\t[" + names[2:] + "]\n")
+    print("\t...")
     common_noun_entities = entityExtractor.get_named_entity_clusters([x[0] for x in common_nouns],True)
 
     # 3. Map urls
@@ -77,8 +86,15 @@ if __name__ == "__main__":
         triplesCountMap[triple] += 1
     sortedTriples = sorted(triplesCountMap.items(), key=operator.itemgetter(1), reverse=True)
 
+    for sub, pred, obj in triple_store.triples((None, None, None)):
+        if type(obj) == rdflib.URIRef:
+            obj = "<" + str(obj) + ">"
+        else:
+            obj = "\"" + str(obj) + "\""
+        print("\t<" + str(sub) + "> <" + str(pred) + "> " + obj)
+
     # 6. generate summary
-    print("\n\nSummary of the twitter trend: ")
+    print("\nSummary of the twitter trend: ")
     sentence_generator=Sentence_generator(sortedTriples)
     summary=sentence_generator.get_sentences()
     

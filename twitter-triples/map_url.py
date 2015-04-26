@@ -23,6 +23,7 @@ class Wiki_Mapper:
     def map_urls(self):
         #Entities = {}
         Entities=[]
+        counter = 0
         for word in self.proper_entities:
             if word[1]<10: continue  
             formatted_words=set()
@@ -35,13 +36,31 @@ class Wiki_Mapper:
             #print(formatted_words)
             #keywords=self.select_most_relevant(formatted_words)
             wikiUrls=[]
-            for word in formatted_words:
-                wikiUrls.extend(wikipedia.search(word))
+            for word1 in formatted_words:
+                if word1 == None or word1 == "":
+                    continue
+                wikiUrls.extend(wikipedia.search(word1))
             wikiUrls=self.prune_search_space(formatted_words, wikiUrls)
             #print(" ")
             #print(wikiUrls)
             #Entities[formatted_words[0]]=self.SelectUrl(formatted_words[0],wikiUrls)
-            Entities.append((formatted_words, self.SelectUrl(formatted_words[0],wikiUrls)))
+            url = self.SelectUrl(formatted_words[0],wikiUrls)
+            Entities.append((formatted_words, url))
+            if counter < 10:
+                if url != None:
+                    counter1 = 0
+                    print_string = ""
+                    for string in word[0]:
+                        if counter1 < 5:
+                            print_string = print_string + ", \"" + string + "\""
+                            counter1 += 1
+                    if counter1 == 5:
+                        print_string = print_string + "... "
+                    print("\t[" + print_string[2:] + "]")
+                    print("\tURL: " + url + "\n")
+                    counter += 1
+                    if counter == 10:
+                        print("\t...")
         return Entities
 
     def prune_search_space(self, formatted_words, wikiUrls):
@@ -83,19 +102,20 @@ class Wiki_Mapper:
                 page = wikipedia.page(url)
                 content=page.content
                 title=page.title.lower()
-                #similarity=self.comparer.getSimilarity(searchTerm,title.encode("utf-8"))
+                similarity=self.comparer.getSimilarity(searchTerm,title.encode("utf-8"))
                 #print("Word, title, similarity: "+searchTerm+" : "+title.encode("utf-8")+" : "+str(similarity))
-                #if similarity<0.9: continue
+                if similarity<0.9: continue
                 countOfEntities=0
                 for collection in self.noun_entities,self.proper_entities:
                     for word in collection:
                         if word[1]<5:continue
                         #keyword=self.select_shortest(word[0])
-                        regexp = re.compile(word[0][0])
-                        if regexp.search(content) is not None: 
+                        regexp = re.compile(word[0][0], flags=re.IGNORECASE)
+                        matches = re.findall(regexp, content)
+                        if matches is not None and len(matches) > 0: 
                             #print(word[0])                                
                             #print(keyword)
-                            countOfEntities+=1
+                            countOfEntities+=len(matches)
                 #best_word=self.select_most_relevant(words)[0][0].lower()
                 #print(str(url))
                 #print(countOfEntities)    

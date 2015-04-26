@@ -28,23 +28,23 @@ class Tweet_extractor:
         auth = tweepy.OAuthHandler(self.consumer_key , self.secret_key)
         auth.set_access_token(self.access_token_key, self.access_secret_key )
         api = tweepy.API(auth)
-        try:
-            count=0
-            for tweet in tweepy.Cursor(api.search,
-                           q=query,
-                           count=100,
-					include_entities=True,
-					lang="en",
-                    #result_type="recent"
-                    ).items():
-                count+=1
-                if count>1000: break
-                finaltweet=tweet.text.replace("\n"," ")
-                if finaltweet!="":
-                    with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
-                        tweetfile.write(finaltweet+"\n")
-        except tweepy.TweepError:
-            time.sleep(60*20)
+        #try:
+        count=0
+        for tweet in tweepy.Cursor(api.search,
+                       q=query,
+                       count=100,
+				include_entities=True,
+				lang="en",
+                #result_type="recent"
+                ).items():
+            count+=1
+            if count>500: break
+            finaltweet=tweet.text.replace("\n"," ")
+            if finaltweet!="":
+                with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
+                    tweetfile.write(finaltweet+"\n")
+        #except tweepy.TweepError:
+        #    time.sleep(60*20)
             
 
 

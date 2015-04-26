@@ -33,7 +33,7 @@ class Extract_entities:
             is_possessive = False
             previous_token = ""
             for token in tweet:
-                if token.endswith(("/^", "/Z", "/@")):
+                if token.endswith(("/^", "/Z", "/@", "/#")):
                     if token.endswith("/Z"):
                         is_possessive = True
                     else:
@@ -64,6 +64,10 @@ class Extract_entities:
                             proper_nouns.append(previous_token)
                     is_prev = False
         sorted_proper_nouns = sorted(self.proper_noun_count.items(), key=operator.itemgetter(1), reverse=True)
+        print("\nTop proper nouns: ")
+        for i in range(0, 10):
+            print("\n\t" + sorted_proper_nouns[i][0])
+        print("\n\t...")
         return sorted_proper_nouns
 
     def get_common_nouns(self):

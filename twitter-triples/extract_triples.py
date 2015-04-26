@@ -39,7 +39,7 @@ class Relation_Extractor:
     def extract_relationships(self):
         processed_tweets = self.preprocess_tweets()
         grammar = r"""
-            ENTITY: {<\^|@>+}
+            ENTITY: {<\^|@|\#>+}
             NP: {<D|Z>?<A>*<N|ENTITY>+}
             VP: {<V>+}
             REL: {<NP><VP><P>*<NP>}
@@ -94,8 +94,10 @@ class Relation_Extractor:
     def process_noun_phrase(self, parent):
         adjectives = []
         entityUri = None
+        possessiveUri = None
         is_noun = False
         noun = ""
+        is_possessive = False
         for node in parent:
             if type(node) is nltk.Tree:
                 if node.label() == "ENTITY":
@@ -109,15 +111,19 @@ class Relation_Extractor:
                             self.add_to_triple_store((entityUri, self.uriForIs, adjective))
                             self.triples.append(entityUri + " " +self.uriForIs +" " + adjective.lower())
                         adjectives = []
+                        if is_possessive == True:
+                            self.add_to_triple_store((entityUri, self.uriForIs, adjective))
+                            self.triples.append(possessiveUri + " has " + entityUri)
             else:
                 if node[1] == "Z":
                     entity = node[0].rstrip("'s")
-                    entityUri = self.get_entity_uri(entity)
-                    if len(adjectives) > 0 and entityUri != None:
-                        for adjective in adjectives:
-                            self.add_to_triple_store((entityUri, self.uriForIs, adjective))
-                            self.triples.append(entityUri + " " +self.uriForIs + " " + adjective.lower())
-                        adjectives = []
+                    possessiveUri = self.get_entity_uri(entity)
+                    #if len(adjectives) > 0 and entityUri != None:
+                    #    for adjective in adjectives:
+                    #        self.add_to_triple_store((entityUri, self.uriForIs, adjective))
+                    #        self.triples.append(entityUri + " " +self.uriForIs + " " + adjective.lower())
+                    is_possessive = True
+                    #    adjectives = []
                 elif node[1] == "A":
                     adjectives.append(node[0])
                 elif node[1] == "N" : 
@@ -128,12 +134,18 @@ class Relation_Extractor:
             #for leaf in parent.leaves():
             #    label += leaf[0] + " "
             #label = label.strip().lower()
-            if entityUri == None:
+            if entityUri == None or possessiveUri == None:
                 return "BN:" + noun.strip().lower()
             else:
-                return None
+                if entityUri != None:
+                    return entityUri
+                else:
+                    return possessiveUri
         else:
-            return entityUri
+            if entityUri != None:
+                return entityUri
+            else:
+                return possessiveUri
 
     def get_entity_uri(self, name):
         if name.lower() in self.entities:
