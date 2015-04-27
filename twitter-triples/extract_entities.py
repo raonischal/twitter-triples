@@ -41,7 +41,7 @@ class Extract_entities:
                     token = token[:-2]
                     if token.endswith("'s"):
                         token = token[:-2]
-                    if is_prev == True:
+                    if is_prev == True and token[0] !='#' and token[0] !='@':
                         previous_token = previous_token + " " + token
                     else:
                         is_prev = True
