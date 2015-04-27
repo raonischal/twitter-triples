@@ -72,6 +72,7 @@ if __name__ == "__main__":
             subject = rdflib.URIRef(parts[0])
             conjugatedForm = conjugate(parts[1])
             verbURI = sparql_endpoint.getWordnetURI(conjugatedForm)
+            if verbURI is None: continue
             predicate = rdflib.URIRef(verbURI)
             if " " in parts[2]:
                 obj = rdflib.Literal(parts[2])
