@@ -38,7 +38,7 @@ class Tweet_extractor:
                 #result_type="recent"
                 ).items():
             count+=1
-            if count>500: break
+            if count>1000: break
             finaltweet=tweet.text.replace("\n"," ")
             if finaltweet!="":
                 with codecs.open("tweets.txt",mode='a',encoding='utf-8') as tweetfile:
