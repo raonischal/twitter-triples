@@ -110,7 +110,7 @@ class Wiki_Mapper:
                     for word in collection:
                         if word[1]<5:continue
                         #keyword=self.select_shortest(word[0])
-                        regexp = re.compile(word[0][0], flags=re.IGNORECASE)
+                        regexp = re.compile(re.escape(self.FormatWord(word[0][0])), flags=re.IGNORECASE)
                         matches = re.findall(regexp, content)
                         if matches is not None and len(matches) > 0: 
                             #print(word[0])                                
