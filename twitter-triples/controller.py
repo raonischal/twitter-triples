@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # 1. Get tweets
     if sys.argv[1] == None:
         print("Error: Please provide the filename to twitter's API keys")
-    query = raw_input("Please enter the query: ")
+    query = raw_input("Please enter a twitter trend: ")
     extractor=Tweet_extractor(sys.argv[1])
     print("\nFetching tweets for \"" + query + "\"")
     tweets=extractor.get_tweets(query)
