@@ -28,7 +28,7 @@ class Sentence_generator:
             object_name=filter_noun(words[2])    
             #verb_past=en.verb.present(filter_verb(words[1]))
             verb_past=filter_verb(words[1])
-            sentences.append((str(subject_name)+" "+str(verb_past)+" "+str(object_name)+"."))
+            sentences.append((subject_name.encode('utf-8')+" "+verb_past.encode('utf-8')+" "+object_name.encode('utf-8')+"."))
         sentences=set(sentences)
         sentences=" ".join(sentences)
         print(sentences)
