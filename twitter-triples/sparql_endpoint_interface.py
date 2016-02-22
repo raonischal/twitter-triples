@@ -8,6 +8,7 @@ class SPARQL_Endpoint_Interface:
         self.wordnetEndpoint.parse("wordnet-wordtype.rdf", format="turtle")
 
     def getDBPediaURI(self, wikipediaURL):
+        wikipediaURL = wikipediaURL.replace("https://", "http://")
         queryString = """select distinct ?uri WHERE {
             ?uri foaf:isPrimaryTopicOf <""" + wikipediaURL + """> .
         }"""
@@ -28,7 +29,7 @@ class SPARQL_Endpoint_Interface:
 
 if __name__ == "__main__":
     interface = SPARQL_Endpoint_Interface()
-    #interface.getDBPediaURI("http://en.wikipedia.org/wiki/Ronnie_Price")
-    print(interface.getWordnetURI("arrest"))
-    print(interface.getWordnetURI("remand"))
-    print(interface.getWordnetURI("is"))
+    print(interface.getDBPediaURI("https://en.wikipedia.org/wiki/Chris_Webber"))
+    #print(interface.getWordnetURI("arrest"))
+    #print(interface.getWordnetURI("remand"))
+    #print(interface.getWordnetURI("is"))
