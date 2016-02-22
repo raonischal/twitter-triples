@@ -14,7 +14,7 @@ import rdflib
 
 if __name__ == "__main__":
     # 1. Get tweets
-    if sys.argv[1] == None:
+    if len(sys.argv) == 1:
         print("Error: Please provide the filename to twitter's API keys")
     query = raw_input("Please enter a twitter trend: ")
     extractor=Tweet_extractor(sys.argv[1])
@@ -89,10 +89,10 @@ if __name__ == "__main__":
 
     for sub, pred, obj in triple_store.triples((None, None, None)):
         if type(obj) == rdflib.URIRef:
-            obj = "<" + str(obj) + ">"
+            obj = "<" + obj.encode('utf-8') + ">"
         else:
-            obj = "\"" + str(obj) + "\""
-        print("\t<" + str(sub) + "> <" + str(pred) + "> " + obj)
+            obj = "\"" + obj.encode('utf-8') + "\""
+        print("\t<" + sub.encode('utf-8') + "> <" + pred.encode('utf-8') + "> " + obj)
 
     # 6. generate summary
     print("\nSummary of the twitter trend: ")
